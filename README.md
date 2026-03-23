@@ -128,19 +128,31 @@ After that, I selected the input features and built separate preprocessing pipel
 
 I then trained and tuned three candidate models: **Ridge Regression**, **Random Forest**, and **HistGradientBoostingRegressor**. Ridge was tuned with **GridSearchCV**, while Random Forest and HistGradientBoosting were tuned with **RandomizedSearchCV**. Their performance was compared using **cross-validated RMSE on the log-transformed target**.
 
-Among the tested models, **HistGradientBoostingRegressor** achieved the best cross-validation result, so it was selected as the final model. I then evaluated it on the held-out test set using both the **log scale** and the **original euro scale**, reporting RMSE, MAE, Median Absolute Error, and R².
+Among the tested models, **HistGradientBoostingRegressor** achieved the best cross-validation result, so it was selected as the final model. I then evaluated it on the held-out test set using both the **log scale** and the **original dollar scale**, reporting RMSE, MAE, Median Absolute Error, and R².
 
 Finally, I performed a set of **diagnostic checks**, including actual-versus-predicted comparisons, worst and best prediction examples, a residual plot, and the distribution of absolute errors. These diagnostics showed that the model captures the general pricing structure reasonably well, but has more difficulty with extreme or atypical listings.
 
 ### Final Results and Evaluations
 
-To better understand the model's behavior, I examined three groups of predictions on the test set: a random sample, the worst predictions, and the best predictions.
+**Note:** Although I referred to the target as being in euros in the model notebook because the listings are located in the Basque Country, the original price variable in the dataset is **actually** denominated in U.S. dollars.
+
+The final selected model was evaluated on the held-out test set using both log-scale and euro-scale error metrics.
+
+- **RMSE (log scale):** 0.3256  
+- **RMSE ($):** 95.45  
+- **MAE ($):** 44.13  
+- **Median Absolute Error ($):** 20.62  
+- **R²:** 0.5945  
+
+These results suggest that the model captures a meaningful part of the variation in Airbnb prices, although prediction errors remain larger for some listings, especially atypical or high-priced ones. The gap between **MAE** and **Median Absolute Error** also indicates that a smaller number of difficult cases still produce relatively large errors.
+
+To better understand the model's behavior, I examined three groups of predictions on the test set: a random sample, the worst predictions, and the best predictions:
 
 #### Random Sample of Predictions
 
 The random sample shows that the model often produces reasonably close estimates for ordinary listings, although some medium-sized errors remain.
 
-| Actual Price (€) | Predicted Price (€) | Absolute Error (€) | Percentage Error (%) |
+| Actual Price ($) | Predicted Price ($) | Absolute Error ($) | Percentage Error ($) |
 |------------------|---------------------|--------------------|----------------------|
 | 75.00            | 127.89              | 52.89              | 70.52                |
 | 93.00            | 82.55               | 10.45              | 11.23                |
@@ -157,7 +169,7 @@ The random sample shows that the model often produces reasonably close estimates
 
 The worst predictions are mostly associated with very expensive listings. In these cases, the model often strongly underestimates the actual price, which suggests that rare luxury or highly atypical listings are not well represented by the general pricing patterns learned from the data.
 
-| Actual Price (€) | Predicted Price (€) | Absolute Error (€) | Percentage Error (%) |
+| Actual Price ($) | Predicted Price ($) | Absolute Error ($) | Percentage Error (%) |
 |------------------|---------------------|--------------------|----------------------|
 | 1044.62          | 174.18              | 870.44             | 83.33                |
 | 1044.62          | 268.97              | 775.65             | 74.25                |
@@ -174,7 +186,7 @@ The worst predictions are mostly associated with very expensive listings. In the
 
 The best predictions show that the model can estimate many standard listings with very high accuracy when they follow the dominant patterns in the dataset.
 
-| Actual Price (€) | Predicted Price (€) | Absolute Error (€) | Percentage Error (%) |
+| Actual Price ($) | Predicted Price ($) | Absolute Error ($) | Percentage Error (%) |
 |------------------|---------------------|--------------------|----------------------|
 | 64.00            | 63.99               | 0.01               | 0.01                 |
 | 93.00            | 92.99               | 0.01               | 0.01                 |
@@ -189,3 +201,12 @@ The best predictions show that the model can estimate many standard listings wit
 
 Overall, these results suggest that the model performs reasonably well for typical listings, but struggles more with rare, very high-priced, or otherwise unusual properties. This pattern is consistent with the earlier observation that extreme listings are harder to model reliably, even after transforming and clipping the target variable.
 
+### Diagnostic Plots
+
+#### Actual vs Predicted
+
+![Actual vs Predicted Prices](image.png)
+
+![Residual Plot](image-1.png)
+
+![Distribution of Absolute Errors](image-2.png)

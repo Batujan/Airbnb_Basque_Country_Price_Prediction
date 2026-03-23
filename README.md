@@ -134,107 +134,58 @@ Finally, I performed a set of **diagnostic checks**, including actual-versus-pre
 
 ### Final Results and Evaluations
 
-Random sample of predictions:
+To better understand the model's behavior, I examined three groups of predictions on the test set: a random sample, the worst predictions, and the best predictions.
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
+#### Random Sample of Predictions
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
+The random sample shows that the model often produces reasonably close estimates for ordinary listings, although some medium-sized errors remain.
 
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>actual_price_eur</th>
-      <th>predicted_price_eur</th>
-      <th>absolute_error_eur</th>
-      <th>percentage_error</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>783</th>
-      <td>75.0</td>
-      <td>127.886757</td>
-      <td>52.886757</td>
-      <td>70.515676</td>
-    </tr>
-    <tr>
-      <th>898</th>
-      <td>93.0</td>
-      <td>82.551822</td>
-      <td>10.448178</td>
-      <td>11.234600</td>
-    </tr>
-    <tr>
-      <th>413</th>
-      <td>156.0</td>
-      <td>232.491751</td>
-      <td>76.491751</td>
-      <td>49.033174</td>
-    </tr>
-    <tr>
-      <th>467</th>
-      <td>32.0</td>
-      <td>40.569881</td>
-      <td>8.569881</td>
-      <td>26.780878</td>
-    </tr>
-    <tr>
-      <th>745</th>
-      <td>71.0</td>
-      <td>64.859545</td>
-      <td>6.140455</td>
-      <td>8.648528</td>
-    </tr>
-    <tr>
-      <th>109</th>
-      <td>105.0</td>
-      <td>107.067015</td>
-      <td>2.067015</td>
-      <td>1.968586</td>
-    </tr>
-    <tr>
-      <th>522</th>
-      <td>89.0</td>
-      <td>137.618602</td>
-      <td>48.618602</td>
-      <td>54.627643</td>
-    </tr>
-    <tr>
-      <th>56</th>
-      <td>138.0</td>
-      <td>128.865553</td>
-      <td>9.134447</td>
-      <td>6.619164</td>
-    </tr>
-    <tr>
-      <th>1111</th>
-      <td>193.0</td>
-      <td>220.362550</td>
-      <td>27.362550</td>
-      <td>14.177487</td>
-    </tr>
-    <tr>
-      <th>816</th>
-      <td>203.0</td>
-      <td>212.601840</td>
-      <td>9.601840</td>
-      <td>4.729971</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+| Actual Price (€) | Predicted Price (€) | Absolute Error (€) | Percentage Error (%) |
+|------------------|---------------------|--------------------|----------------------|
+| 75.00            | 127.89              | 52.89              | 70.52                |
+| 93.00            | 82.55               | 10.45              | 11.23                |
+| 156.00           | 232.49              | 76.49              | 49.03                |
+| 32.00            | 40.57               | 8.57               | 26.78                |
+| 71.00            | 64.86               | 6.14               | 8.65                 |
+| 105.00           | 107.07              | 2.07               | 1.97                 |
+| 89.00            | 137.62              | 48.62              | 54.63                |
+| 138.00           | 128.87              | 9.13               | 6.62                 |
+| 193.00           | 220.36              | 27.36              | 14.18                |
+| 203.00           | 212.60              | 9.60               | 4.73                 |
 
+#### Worst Predictions
 
+The worst predictions are mostly associated with very expensive listings. In these cases, the model often strongly underestimates the actual price, which suggests that rare luxury or highly atypical listings are not well represented by the general pricing patterns learned from the data.
 
-    
+| Actual Price (€) | Predicted Price (€) | Absolute Error (€) | Percentage Error (%) |
+|------------------|---------------------|--------------------|----------------------|
+| 1044.62          | 174.18              | 870.44             | 83.33                |
+| 1044.62          | 268.97              | 775.65             | 74.25                |
+| 850.00           | 90.20               | 759.80             | 89.39                |
+| 1044.62          | 315.86              | 728.76             | 69.76                |
+| 1044.62          | 316.47              | 728.15             | 69.70                |
+| 909.00           | 193.47              | 715.53             | 78.72                |
+| 1044.62          | 337.33              | 707.29             | 67.71                |
+| 1044.62          | 345.96              | 698.66             | 66.88                |
+| 931.00           | 352.69              | 578.31             | 62.12                |
+| 240.00           | 815.02              | 575.02             | 239.59               |
+
+#### Best Predictions
+
+The best predictions show that the model can estimate many standard listings with very high accuracy when they follow the dominant patterns in the dataset.
+
+| Actual Price (€) | Predicted Price (€) | Absolute Error (€) | Percentage Error (%) |
+|------------------|---------------------|--------------------|----------------------|
+| 64.00            | 63.99               | 0.01               | 0.01                 |
+| 93.00            | 92.99               | 0.01               | 0.01                 |
+| 27.00            | 27.05               | 0.05               | 0.17                 |
+| 225.00           | 224.93              | 0.07               | 0.03                 |
+| 116.00           | 115.93              | 0.07               | 0.06                 |
+| 106.00           | 105.90              | 0.10               | 0.10                 |
+| 27.00            | 26.89               | 0.11               | 0.42                 |
+| 196.00           | 195.87              | 0.13               | 0.07                 |
+| 214.00           | 213.84              | 0.16               | 0.07                 |
+| 73.00            | 72.75               | 0.25               | 0.34                 |
+
+Overall, these results suggest that the model performs reasonably well for typical listings, but struggles more with rare, very high-priced, or otherwise unusual properties. This pattern is consistent with the earlier observation that extreme listings are harder to model reliably, even after transforming and clipping the target variable.
+

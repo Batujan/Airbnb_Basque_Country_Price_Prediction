@@ -47,16 +47,17 @@ Irrelevant identifier columns were removed at the beginning of the project. Text
 The schema of the project structure:
 
 
+```text
 Airbnb_Basque_Country_Price_Prediction/
 ├── data/
-│   └── listings.csv                 
+│   └── listings.csv
 ├── notebooks/
-│   ├── 01_data_exploration.ipynb 
-│   └── 02_model_test.ipynb          
+│   ├── 01_data_exploration.ipynb
+│   └── 02_model_test.ipynb
 ├── .gitignore
 ├── README.md
 └── requirements.txt
-
+```
 
 Recommended reading order: first 01_data_exploration.ipynb, then 02_model_test.ipynb
 

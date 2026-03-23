@@ -46,12 +46,13 @@ Irrelevant identifier columns were removed at the beginning of the project. Text
 
 The schema of the project structure:
 
+```text
 Airbnb_Basque_Country_Price_Prediction/
 ├── data/
 │   └── listings.csv                 # Raw Airbnb dataset
 ├── notebooks/
 │   ├── 01_data_exploration.ipynb    # EDA and preprocessing decisions
-│   └── 02_model_test.ipynb          # Pipelines, model training and evaluation
+│   └── 02_model_test.ipynb          # Pipelines, model training, and evaluation
 ├── .gitignore
 ├── README.md
 └── requirements.txt

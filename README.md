@@ -244,15 +244,15 @@ Taken together, the diagnostic plots show that the model captures the general pr
 
 #### 4.3.1. Actual vs Predicted Prices
 
-![Actual vs Predicted Prices](image.png)
+![Actual vs Predicted Prices](images/image.png)
 
 #### 4.3.2. Residual Plot
 
-![Residual Plot](image-1.png)
+![Residual Plot](images/image-1.png)
 
 #### 4.3.3. Distribution of Absolute Errors
 
-![Distribution of Absolute Errors](image-2.png)
+![Distribution of Absolute Errors](images/image-2.png)
 
 ## 5. How to Run
 

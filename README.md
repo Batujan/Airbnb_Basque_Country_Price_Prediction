@@ -1,5 +1,24 @@
 # Airbnb Basque Country Price Prediction
 
+## Table of Contents
+
+- [1. Dataset](#1-dataset)
+- [2. Project Structure](#2-project-structure)
+- [3. Exploratory Data Analysis](#3-exploratory-data-analysis)
+- [3.1. Features Selected for Modeling](#31-features-selected-for-modeling)
+- [4. Creating the Pipelines, Training the Models and the Final Evaluation](#4-creating-the-pipelines-training-the-models-and-the-final-evaluation)
+- [4.1. Model Comparison](#41-model-comparison)
+- [4.2. Final Results and Evaluations](#42-final-results-and-evaluations)
+- [4.2.1. Random Sample of Predictions](#421-random-sample-of-predictions)
+- [4.2.2. Worst Predictions](#422-worst-predictions)
+- [4.2.3. Best Predictions](#423-best-predictions)
+- [4.3. Diagnostic Plots](#43-diagnostic-plots)
+- [4.3.1. Actual vs Predicted Prices](#431-actual-vs-predicted-prices)
+- [4.3.2. Residual Plot](#432-residual-plot)
+- [4.3.3. Distribution of Absolute Errors](#433-distribution-of-absolute-errors)
+- [5. How to Run](#5-how-to-run)
+- [6. Limitations and Future Improvements](#6-limitations-and-future-improvements)
+
 The goal of this project is to analyze and predict Airbnb listing prices in the Basque Country, where I am currently based. With its coastal and mountainous areas, the region attracts both nature- and culture-oriented tourism, which makes Airbnb price analysis a worthwhile task. The dataset was obtained from [Inside Airbnb](https://insideairbnb.com/get-the-data/)
 
 Because the task involves predicting labeled outcomes, it is a supervised machine learning problem. Since the target is a continuous numerical value, it is specifically a regression problem. In this project, I used three different models and selected the best one based on cross-validation performance on the training set.
@@ -8,7 +27,7 @@ As a linear baseline, I used Ridge Regression because the dataset contains many 
 
 Among the three, Gradient Boosting performed best. Its advantage comes from building trees sequentially, with each new tree learning to correct the errors of the previous ones. This allows it to reduce bias effectively while still modeling complex nonlinear patterns.
 
-## Dataset
+## 1. Dataset
 
 The dataset is relatively small, containing 6,339 rows and 79 columns. It includes Airbnb listings across the Basque Country, with a higher concentration around Bilbao, Donostia-San Sebastián, and Vitoria-Gasteiz.
 
@@ -23,7 +42,7 @@ The features can be grouped into the following categories:
 
 Irrelevant identifier columns were removed at the beginning of the project. Text features were also excluded, as text analysis is being reserved for a separate project.
 
-## Project Structure
+## 2. Project Structure
 
 The schema of the project structure:
 
@@ -39,7 +58,7 @@ Airbnb_Basque_Country_Price_Prediction/
 
 Recommended reading order: first 01_data_exploration.ipynb, then 02_model_test.ipynb
 
-## Exploratory Data Analysis
+## 3. Exploratory Data Analysis
 
 Structure:
 
@@ -69,7 +88,7 @@ After that, I analyzed **amenities** by parsing the text-based amenities lists i
 
 Finally, I reviewed the **missing values** in the dataset. Based on their meaning and proportion, I decided that review-related variables would be imputed with **0** to reflect the absence of reviews, while a few numeric housing variables with very small missingness would be imputed with the median.
 
-### Features Selected for Modeling
+### 3.1. Features Selected for Modeling
 
 Based on the EDA, the following groups of features were carried forward into the modeling stage:
 
@@ -116,7 +135,7 @@ Based on the EDA, the following groups of features were carried forward into the
 
 135 features in total has been chosen for the models.
 
-## Creating the Pipelines, Training the Models and the Final Evaluation
+## 4. Creating the Pipelines, Training the Models and the Final Evaluation
 
 This notebook implements the full **model development and evaluation pipeline** for the Airbnb Basque Country dataset.
 
@@ -132,7 +151,19 @@ Among the tested models, **HistGradientBoostingRegressor** achieved the best cro
 
 Finally, I performed a set of **diagnostic checks**, including actual-versus-predicted comparisons, worst and best prediction examples, a residual plot, and the distribution of absolute errors. These diagnostics showed that the model captures the general pricing structure reasonably well, but has more difficulty with extreme or atypical listings.
 
-### Final Results and Evaluations
+### 4.1. Model Comparison
+
+The candidate models were compared using cross-validated RMSE on the log-transformed target over the training set.
+
+| Model | CV RMSE (log scale) |
+|-------|----------------------|
+| HistGradientBoostingRegressor | 0.3341 |
+| Random Forest | 0.3632 |
+| Ridge Regression | 0.4234 |
+
+Based on cross-validation performance, **HistGradientBoostingRegressor** was selected as the final model. The cross-validation results suggest that tree-based ensemble models capture the pricing structure better than the linear baseline. In particular, HistGradientBoosting achieved the lowest validation error, which indicates that nonlinear relationships play an important role in this dataset.
+
+### 4.2. Final Results and Evaluations
 
 **Note:** Although I referred to the target as being in euros in the model notebook because the listings are located in the Basque Country, the original price variable in the dataset is **actually** denominated in U.S. dollars.
 
@@ -144,11 +175,13 @@ The final selected model was evaluated on the held-out test set using both log-s
 - **Median Absolute Error ($):** 20.62  
 - **R²:** 0.5945  
 
-These results suggest that the model captures a meaningful part of the variation in Airbnb prices, although prediction errors remain larger for some listings, especially atypical or high-priced ones. The gap between **MAE** and **Median Absolute Error** also indicates that a smaller number of difficult cases still produce relatively large errors.
+These results suggest that the model captures a meaningful part of the variation in Airbnb prices, although prediction errors remain larger for some listings, especially atypical or high-priced ones. The gap between **MAE** and **Median Absolute Error** also indicates that a smaller number of difficult cases still produce relatively large errors. 
+
+With an **R² of 0.5945**, the model explains about **59.5% of the variance** in listing prices on the test set. This suggests a moderate predictive fit: the model captures much of the general pricing structure, but not all of the factors driving price differences.
 
 To better understand the model's behavior, I examined three groups of predictions on the test set: a random sample, the worst predictions, and the best predictions:
 
-#### Random Sample of Predictions
+#### 4.2.1. Random Sample of Predictions
 
 The random sample shows that the model often produces reasonably close estimates for ordinary listings, although some medium-sized errors remain.
 
@@ -165,7 +198,7 @@ The random sample shows that the model often produces reasonably close estimates
 | 193.00           | 220.36              | 27.36              | 14.18                |
 | 203.00           | 212.60              | 9.60               | 4.73                 |
 
-#### Worst Predictions
+#### 4.2.2. Worst Predictions
 
 The worst predictions are mostly associated with very expensive listings. In these cases, the model often strongly underestimates the actual price, which suggests that rare luxury or highly atypical listings are not well represented by the general pricing patterns learned from the data.
 
@@ -182,7 +215,7 @@ The worst predictions are mostly associated with very expensive listings. In the
 | 931.00           | 352.69              | 578.31             | 62.12                |
 | 240.00           | 815.02              | 575.02             | 239.59               |
 
-#### Best Predictions
+#### 4.2.3. Best Predictions
 
 The best predictions show that the model can estimate many standard listings with very high accuracy when they follow the dominant patterns in the dataset.
 
@@ -201,12 +234,46 @@ The best predictions show that the model can estimate many standard listings wit
 
 Overall, these results suggest that the model performs reasonably well for typical listings, but struggles more with rare, very high-priced, or otherwise unusual properties. This pattern is consistent with the earlier observation that extreme listings are harder to model reliably, even after transforming and clipping the target variable.
 
-### Diagnostic Plots
+### 4.3. Diagnostic Plots
 
-#### Actual vs Predicted
+Taken together, the diagnostic plots show that the model captures the general pricing structure of the dataset reasonably well, especially for typical low- and mid-priced listings. However, the errors become larger and more dispersed for expensive or unusual properties, with a tendency to underpredict many high-price listings. The error distribution also shows that, although most predictions are fairly close to the true values, a smaller number of difficult cases produce very large errors. Overall, the model is useful for the bulk of the dataset, but less reliable at the extremes.
+
+#### 4.3.1. Actual vs Predicted Prices
 
 ![Actual vs Predicted Prices](image.png)
 
+#### 4.3.2. Residual Plot
+
 ![Residual Plot](image-1.png)
 
+#### 4.3.3. Distribution of Absolute Errors
+
 ![Distribution of Absolute Errors](image-2.png)
+
+## 5. How to Run
+
+This project is notebook-based. The raw dataset is already included at `data/listings.csv`, and the analysis can be reproduced by running the notebooks in order.
+
+1. Clone the repository and move into the project folder.
+2. Create and activate a virtual environment.
+3. Install the required libraries.
+4. Start Jupyter Notebook.
+5. Run `notebooks/01_data_exploration.ipynb` first, then `notebooks/02_model_test.ipynb`.
+
+Example setup:
+
+```bash
+git clone <your-repository-url>
+cd Airbnb_Basque_Country_Price_Prediction
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+jupyter notebook
+```
+Then open the notebooks from the Jupyter interface and run them cell by cell in the recommended order.
+
+## 6. Limitations and Future Improvements
+
+One limitation of this project is that it relies only on structured tabular features. Text variables such as listing descriptions, neighbourhood overviews are excluded, even though they may contain useful information about perceived quality, style, and guest experience. The model also performs less reliably on rare or very expensive listings.
+
+A possible next step would be to process these text features and test whether they improve price prediction. This could help capture information that is currently missing from the structured data alone. 

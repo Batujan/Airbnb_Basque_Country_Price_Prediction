@@ -51,9 +51,10 @@ The schema of the project structure:
 Airbnb_Basque_Country_Price_Prediction/
 ├── data/
 │   └── listings.csv
+├── images/  
 ├── notebooks/
 │   ├── 01_data_exploration.ipynb
-│   └── 02_model_test.ipynb
+│   └── 02_model_test.ipynb 
 ├── .gitignore
 ├── README.md
 └── requirements.txt

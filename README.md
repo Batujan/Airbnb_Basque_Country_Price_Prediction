@@ -56,6 +56,7 @@ Airbnb_Basque_Country_Price_Prediction/
 ├── .gitignore
 ├── README.md
 └── requirements.txt
+```text
 
 Recommended reading order: first 01_data_exploration.ipynb, then 02_model_test.ipynb
 

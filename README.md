@@ -29,7 +29,7 @@ Among the three, Gradient Boosting performed best. Its advantage comes from buil
 
 ## 1. Dataset
 
-The dataset is relatively small, containing 6,339 rows and 79 columns. It includes Airbnb listings across the Basque Country, with a higher concentration around Bilbao, Donostia-San Sebastián, and Vitoria-Gasteiz.
+The dataset is relatively small, containing 6,339 rows and 79 columns. It includes Airbnb listings distributed across the Basque Country, including its main urban and coastal areas.
 
 The features can be grouped into the following categories:
 
@@ -51,10 +51,10 @@ The schema of the project structure:
 Airbnb_Basque_Country_Price_Prediction/
 ├── data/
 │   └── listings.csv
-├── images/  
+├── images/
 ├── notebooks/
 │   ├── 01_data_exploration.ipynb
-│   └── 02_model_test.ipynb 
+│   └── 02_model_test.ipynb
 ├── .gitignore
 ├── README.md
 └── requirements.txt
@@ -78,11 +78,11 @@ Structure:
 
 EDA begins with importing libraries, loading the data, and performing initial cleaning such as converting the strings that are essentially numbers to numeric values, including the removal of irrelevant columns and text features. These steps are followed immediately by a train-test split to prevent data leakage, so the entire EDA is conducted only on the training set.
 
-I used a stratified train-test split based on price bins created from 5 quantiles, with an 80–20 train-test ratio. This helps preserve a similar distribution of lower- and higher-priced listings across both sets. 
+I used a stratified train-test split based on price bins created from 5 quantiles, with an 80–20 train-test ratio. This helps preserve a similar distribution of lower- and higher-priced listings across both sets.
 
 In the fourth section, I analyzed the training set after the split and used the results to guide feature selection and preprocessing decisions.
 
-First, I examined the **numerical features**, focusing on their distributions, skewness, and relationship with **log_price**. For highly skewed variables, I tested log and clipping transformations and kept the versions that appeared more useful based on correlation checks. I also analyzed the **geographical variables** and created distance-based features such as **distance_to_center** (this should be interpreted as **distance_to_bilbao**, since the feature was originally named when I thought the dataset only contained listings from Bilbao), **distance_to_donostia**, **distance_to_vitoria**, and **distance_to_coast**. These engineered features were intended to capture location effects more meaningfully than raw coordinates, especially for linear models. The reference locations were chosen based on the main concentration areas observed in the geographical plots. 
+First, I examined the **numerical features**, focusing on their distributions, skewness, and relationship with **log_price**. For highly skewed variables, I tested log and clipping transformations and kept the versions that appeared more useful based on correlation checks. I also analyzed the **geographical variables** and created distance-based features such as **distance_to_basque_country_reference**, **distance_to_donostia**, **distance_to_vitoria**, and **distance_to_coast**. These engineered features were intended to capture location effects more meaningfully than raw coordinates, especially for linear models. The reference locations were chosen based on the main concentration areas observed in the geographical plots.
 
 Next, I analyzed the **categorical features** by checking their cardinality, frequency distribution, and relationship with **log_price**. I dropped some less useful or redundant columns, grouped rare categories into **"Other"** for high-cardinality variables such as **property_type** and **neighbourhood_cleansed**, and kept the cleaner location variable that best balanced detail and consistency.
 
@@ -151,7 +151,7 @@ After that, I selected the input features and built separate preprocessing pipel
 
 I then trained and tuned three candidate models: **Ridge Regression**, **Random Forest**, and **HistGradientBoostingRegressor**. Ridge was tuned with **GridSearchCV**, while Random Forest and HistGradientBoosting were tuned with **RandomizedSearchCV**. Their performance was compared using **cross-validated RMSE on the log-transformed target**.
 
-Among the tested models, **HistGradientBoostingRegressor** achieved the best cross-validation result, so it was selected as the final model. I then evaluated it on the held-out test set using both the **log scale** and the **original dollar scale**, reporting RMSE, MAE, Median Absolute Error, and R².
+Among the tested models, **HistGradientBoostingRegressor** achieved the best cross-validation result, so it was selected as the final model. I then evaluated it on the held-out test set using both the **log scale** and the **original euro scale**, reporting RMSE, MAE, Median Absolute Error, and R².
 
 Finally, I performed a set of **diagnostic checks**, including actual-versus-predicted comparisons, worst and best prediction examples, a residual plot, and the distribution of absolute errors. These diagnostics showed that the model captures the general pricing structure reasonably well, but has more difficulty with extreme or atypical listings.
 
@@ -169,17 +169,15 @@ Based on cross-validation performance, **HistGradientBoostingRegressor** was sel
 
 ### 4.2. Final Results and Evaluations
 
-**Note:** Although I referred to the target as being in euros in the model notebook because the listings are located in the Basque Country, the original price variable in the dataset is **actually** denominated in U.S. dollars.
-
 The final selected model was evaluated on the held-out test set using both log-scale and euro-scale error metrics.
 
-- **RMSE (log scale):** 0.3256  
-- **RMSE ($):** 95.45  
-- **MAE ($):** 44.13  
-- **Median Absolute Error ($):** 20.62  
-- **R²:** 0.5945  
+- **RMSE (log scale):** 0.3256
+- **RMSE (€):** 95.45
+- **MAE (€):** 44.13
+- **Median Absolute Error (€):** 20.62
+- **R²:** 0.5945
 
-These results suggest that the model captures a meaningful part of the variation in Airbnb prices, although prediction errors remain larger for some listings, especially atypical or high-priced ones. The gap between **MAE** and **Median Absolute Error** also indicates that a smaller number of difficult cases still produce relatively large errors. 
+These results suggest that the model captures a meaningful part of the variation in Airbnb prices, although prediction errors remain larger for some listings, especially atypical or high-priced ones. The gap between **MAE** and **Median Absolute Error** also indicates that a smaller number of difficult cases still produce relatively large errors.
 
 With an **R² of 0.5945**, the model explains about **59.5% of the variance** in listing prices on the test set. This suggests a moderate predictive fit: the model captures much of the general pricing structure, but not all of the factors driving price differences.
 
@@ -189,7 +187,7 @@ To better understand the model's behavior, I examined three groups of prediction
 
 The random sample shows that the model often produces reasonably close estimates for ordinary listings, although some medium-sized errors remain.
 
-| Actual Price ($) | Predicted Price ($) | Absolute Error ($) | Percentage Error ($) |
+| Actual Price (€) | Predicted Price (€) | Absolute Error (€) | Percentage Error (%) |
 |------------------|---------------------|--------------------|----------------------|
 | 75.00            | 127.89              | 52.89              | 70.52                |
 | 93.00            | 82.55               | 10.45              | 11.23                |
@@ -206,7 +204,7 @@ The random sample shows that the model often produces reasonably close estimates
 
 The worst predictions are mostly associated with very expensive listings. In these cases, the model often strongly underestimates the actual price, which suggests that rare luxury or highly atypical listings are not well represented by the general pricing patterns learned from the data.
 
-| Actual Price ($) | Predicted Price ($) | Absolute Error ($) | Percentage Error (%) |
+| Actual Price (€) | Predicted Price (€) | Absolute Error (€) | Percentage Error (%) |
 |------------------|---------------------|--------------------|----------------------|
 | 1044.62          | 174.18              | 870.44             | 83.33                |
 | 1044.62          | 268.97              | 775.65             | 74.25                |
@@ -223,7 +221,7 @@ The worst predictions are mostly associated with very expensive listings. In the
 
 The best predictions show that the model can estimate many standard listings with very high accuracy when they follow the dominant patterns in the dataset.
 
-| Actual Price ($) | Predicted Price ($) | Absolute Error ($) | Percentage Error (%) |
+| Actual Price (€) | Predicted Price (€) | Absolute Error (€) | Percentage Error (%) |
 |------------------|---------------------|--------------------|----------------------|
 | 64.00            | 63.99               | 0.01               | 0.01                 |
 | 93.00            | 92.99               | 0.01               | 0.01                 |
@@ -256,7 +254,7 @@ Taken together, the diagnostic plots show that the model captures the general pr
 
 ## 5. How to Run
 
-This project is notebook-based. The raw dataset is already included at `data/listings.csv`, and the analysis can be reproduced by running the notebooks in order.
+This project is notebook-based. The raw dataset is already included at `data/listings.csv`, and the analysis can be reproduced by running the notebooks in order. The notebooks resolve `data/listings.csv` from either the repository root or the `notebooks/` directory, so they should work whether Jupyter starts in the project root or inside the notebook folder.
 
 1. Clone the repository and move into the project folder.
 2. Create and activate a virtual environment.
@@ -276,8 +274,22 @@ jupyter notebook
 ```
 Then open the notebooks from the Jupyter interface and run them cell by cell in the recommended order.
 
+The model notebook runs several cross-validation searches, so the full execution can take several minutes depending on your machine. For a quick clone sanity check before running the full modeling workflow, you can verify that the dataset and key dependencies are available with:
+
+```bash
+python - <<'PY'
+from pathlib import Path
+import pandas as pd
+import sklearn
+path = Path("data/listings.csv")
+df = pd.read_csv(path)
+print(f"Loaded {path} with shape {df.shape}")
+print(f"scikit-learn {sklearn.__version__}")
+PY
+```
+
 ## 6. Limitations and Future Improvements
 
 One limitation of this project is that it relies only on structured tabular features. Text variables such as listing descriptions, neighbourhood overviews are excluded, even though they may contain useful information about perceived quality, style, and guest experience. The model also performs less reliably on rare or very expensive listings.
 
-A possible next step would be to process these text features and test whether they improve price prediction. This could help capture information that is currently missing from the structured data alone. 
+A possible next step would be to process these text features and test whether they improve price prediction. This could help capture information that is currently missing from the structured data alone.
